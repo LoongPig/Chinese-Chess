@@ -45,7 +45,9 @@ private:
 public:
     Chess gBoard(int x,int y){ return board[x][y]; }
     wchar_t gChess(int x,int y){ return board[x][y].gChess(); }
+    wchar_t gChess(coord _){ return gChess(_.x,_.y); }
     Color gColor(int x,int y){ return board[x][y].gColor(); }
+    Color gColor(coord _){ return gColor(_.x,_.y); }
     void Move(int x,int y,int a,int b){ board[a][b].change(board[x][y]);board[x][y].change(Chess()); }// x,y => a,b
     template<typename... Args>
     void Change(Args... _op) { (void(board[_op.x][_op.y].change(_op._chess)), ...); }
@@ -75,7 +77,7 @@ public:
             wcout<<L"\n";
         }
     }
-    void selectChess(Color col){
+    coord selectChess(){
         static coord pla={1,1};
         while(!key_down(VK_RETURN)){
             coord tmp=pla;
@@ -89,6 +91,40 @@ public:
             print();
             Sleep(60);
         }
+        return pla;
     }
-    
+    bool checkWay(coord s,coord e){
+        auto [sx,sy]=s; auto [ex,ey]=e;
+        if(s==e||gColor(s)==null||gColor(s)==gColor(e)) return false;
+        if(gChess(s)==L'将'||gChess(s)==L'帅'){
+            if(abs(sx-ex)+abs(sy-ey)==1) return true;
+            else return false;
+        }
+        if(gChess(s)==L'车'||gChess(s)==L'車'){
+            if(sx==ex||sy==ey) return true;
+            else return false;
+        }
+        if(gChess(s)==L'马'||gChess(s)==L'馬'){
+            int dx[]={1,1,-1,-1,2,2,-2,-2};
+            int dy[]={2,-2,2,-2,1,-1,1,-1};
+            for(int i=0;i<8;i++)
+                if(sx+dx[i]==ex&&sy+dy[i]==ey){
+                    if(abs(dx[i])==2) return gColor(sx+dx[i]/2,sy)==null;
+                    else return gColor(sx,sy+dy[i]/2)==null;
+                }
+            return false;
+        }
+        if(gChess(s)==L'相'||gChess(s)==L'象'){
+            
+        }
+        if(gChess(s)==L'士'||gChess(s)==L'仕'){
+
+        }
+        if(gChess(s)==L'炮'||gChess(s)==L'炮'){
+
+        }
+        if(gChess(s)==L'兵'||gChess(s)==L'卒'){
+
+        }
+    }
 };

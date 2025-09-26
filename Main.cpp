@@ -7,7 +7,6 @@ int main(){
     hideCursor(),system("color f0"),gotoXY(0,0);
     Board _const;
     _const.print();
-    _const.selectChess(red);
     system("pause");
     return 0;
 }
