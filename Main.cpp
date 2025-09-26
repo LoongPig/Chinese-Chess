@@ -4,9 +4,10 @@
 using namespace std;
 int main(){
     _setmode(_fileno(stdout), _O_U16TEXT);
-    hideCursor();system("mode con cols=42 lines=31");
-    Board _const_;
-    _const_.print();
+    hideCursor(),system("color f0"),gotoXY(0,0);
+    Board _const;
+    _const.print();
+    _const.selectChess(red);
     system("pause");
     return 0;
 }

@@ -1,20 +1,32 @@
+#pragma once
 #include <bits/stdc++.h>
 #include "Solve.hpp"
 using namespace std;
+struct coord{
+    int x,y;
+    coord(int _x=-1,int _y=-1){ x=_x,y=_y; }
+    bool operator==(coord other)const{
+        return x==other.x&&y==other.y;
+    }
+};
 class Chess{
 private:
     Color color;
     wchar_t chess;
+    bool flag;
 public:
     Color gColor(){ return color; }
     wchar_t gChess(){ return chess; }
     void changeColor(Color col){ color=col; }
     void changeChess(wchar_t _chess){ chess=_chess; }
     void change(Chess che){ color=che.gColor(),chess=che.gChess(); }
-    Chess(Color col=null,wchar_t che=blank){ color=col,chess=che; }
+    Chess(Color col=null,wchar_t che=blank){ color=col,chess=che,flag=false; }
+    void highLight(){ flag=true; }
+    void lowLight(){ flag=false; }
     void print(){
         if(color==red) colorString(244);
         if(color==black) colorString(240);
+        if(flag) colorString(246);
         wcout<<chess;
         if(chess==blank) wcout<<L" ";
         colorString(240);
@@ -29,6 +41,7 @@ struct opt{
 class Board{
 private:
     Chess board[15][15];
+    int StepCnt;
 public:
     Chess gBoard(int x,int y){ return board[x][y]; }
     wchar_t gChess(int x,int y){ return board[x][y].gChess(); }
@@ -37,6 +50,7 @@ public:
     template<typename... Args>
     void Change(Args... _op) { (void(board[_op.x][_op.y].change(_op._chess)), ...); }
     Board(){
+        StepCnt=0;
         Change(
             opt(1,1,Chess(red,L'车')),opt(1,9,Chess(red,L'车')),
             opt(1,2,Chess(red,L'马')),opt(1,8,Chess(red,L'马')),
@@ -54,10 +68,27 @@ public:
         for(int i=1;i<=9;i+=2) Change(opt(4,i,Chess(red,L'卒')),opt(7,i,Chess(black,L'兵')));
     }
     void print(){
+        gotoXY(0,0);
         for(int i=1;i<=10;i++){
             for(int j=1;j<=9;j++)
                 board[i][j].print();
             wcout<<L"\n";
         }
     }
+    void selectChess(Color col){
+        static coord pla={1,1};
+        while(!key_down(VK_RETURN)){
+            coord tmp=pla;
+            if(key_down(VK_UP)||key_down('W')) pla.x=max(1,pla.x-1);
+            if(key_down(VK_LEFT)||key_down('A')) pla.y=max(1,pla.y-1);
+            if(key_down(VK_RIGHT)||key_down('D')) pla.y=min(9,pla.y+1);
+            if(key_down(VK_DOWN)||key_down('S')) pla.x=min(10,pla.x+1);
+            if(tmp==pla) continue;
+            board[tmp.x][tmp.y].lowLight();
+            board[pla.x][pla.y].highLight();
+            print();
+            Sleep(60);
+        }
+    }
+    
 };

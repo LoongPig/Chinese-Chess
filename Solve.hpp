@@ -23,16 +23,3 @@ void gotoXY(short row,short line){
 void colorString(int col){
 	SetConsoleTextAttribute(hOut,col);
 }
-void cls(int len){
-    colorString(255);
-    for(int i=1;i<=5000;i++) wcout<<L" ";
-}
-void setSize(short width,short height){
-    HANDLE hConsole=GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD bufferSize={width, height};
-    SetConsoleScreenBufferSize(hConsole,bufferSize);
-    SMALL_RECT windowSize={0,0,width-1,height-1};
-    SetConsoleWindowInfo(hConsole,TRUE,&windowSize);
-    HWND hWnd=GetConsoleWindow();
-    ShowScrollBar(hWnd,SB_BOTH,FALSE);
-}
