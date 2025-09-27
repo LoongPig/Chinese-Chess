@@ -42,6 +42,7 @@ class Board{
 private:
     Chess board[15][15];
     int StepCnt;
+    coord redMaster,blackMaster;//红黑方帅将位置
 public:
     Chess gBoard(int x,int y){ return board[x][y]; }
     wchar_t gChess(int x,int y){ return board[x][y].gChess(); }
@@ -65,7 +66,7 @@ public:
     template<typename... Args>
     void Change(Args... _op) { (void(board[_op.x][_op.y].change(_op._chess)), ...); }
     Board(){
-        StepCnt=0;
+        StepCnt=0,redMaster=coord(1,5),blackMaster=coord(10,5);
         Change(
             opt(1,1,Chess(red,L'车')),opt(1,9,Chess(red,L'车')),
             opt(1,2,Chess(red,L'马')),opt(1,8,Chess(red,L'马')),
@@ -84,6 +85,9 @@ public:
     }
     void print(){
         gotoXY(0,0);
+        ///*
+        wcout<<L"WASD 或 ↑,↓,←,→ 移动，E 确定\n";
+        //*/
         for(int i=1;i<=10;i++){
             for(int j=1;j<=9;j++)
                 board[i][j].print();
@@ -96,7 +100,7 @@ public:
     }
     coord selectChess(){
         static coord pla={1,1};
-        while(!key_down(VK_RETURN)){
+        while(!key_down('E')){
             coord tmp=pla;
             if(key_down(VK_UP)||key_down('W')) pla.x=max(1,pla.x-1);
             if(key_down(VK_LEFT)||key_down('A')) pla.y=max(1,pla.y-1);
@@ -108,13 +112,18 @@ public:
             print();
             Sleep(60);
         }
+        print();
         return pla;
     }
     bool checkWay(coord s,coord e){
         auto [sx,sy]=s; auto [ex,ey]=e;
         if(s==e||gColor(s)==null||gColor(s)==gColor(e)) return false;
         if(gChess(s)==L'将'||gChess(s)==L'帅'){
-            if(abs(sx-ex)+abs(sy-ey)==1) return true;
+            if(abs(sx-ex)+abs(sy-ey)==1){
+                if(gColor(s)==red) redMaster=e;
+                else blackMaster=e;
+                return true;
+            }
             else return false;
         }
         if(gChess(s)==L'车'||gChess(s)==L'車'){
@@ -160,25 +169,32 @@ public:
         }
         return false;
     }
-};
-void PlayOn(Board &_const_){
-    _const_.print();
-    while(!key_down(VK_ESCAPE)){
-        RedStart:
-        MessageBox(NULL,L"Red select move chess",L"Prompt",MB_OK);
-        coord p1=_const_.selectChess();
-        if(_const_.gColor(p1)!=red) goto RedStart;
-        MessageBox(NULL,L"Red select where to go",L"Prompt",MB_OK);
-        coord p2=_const_.selectChess();
-        if(!_const_.checkWay(p1,p2)) goto RedStart;
-        _const_.Move(p1,p2);
-        BlackStart:
-        MessageBox(NULL,L"Black select move chess",L"Prompt",MB_OK);
-        p1=_const_.selectChess();
-        if(_const_.gColor(p2)!=black) goto BlackStart;
-        MessageBox(NULL,L"Black select where to go",L"Prompt",MB_OK);
-        p2=_const_.selectChess();
-        if(!_const_.checkWay(p1,p2)) goto BlackStart;
-        _const_.Move(p1,p2);
+    bool checkMaster(Color col){//判将军，已将为 true
+        for(int i=1;i<=10;i++)
+            for(int j=1;j<=9;j++)
+                if(gColor(i,j)==gAntColor(col))
+                    if(checkWay(coord(i,j),Master(red))) return true;
+         return false;
     }
-}
+    void play(){
+        print();
+        while(!key_down(VK_ESCAPE)){
+            RedStart:
+            MessageBox(NULL,L"红方移动",L"提示",MB_OK);
+            coord p1=selectChess();
+            if(gColor(p1)!=red) goto RedStart;
+            MessageBox(NULL,L"棋子要去哪",L"提示",MB_OK);
+            coord p2=selectChess();
+            if(!checkWay(p1,p2)) goto RedStart;
+            Move(p1,p2);
+            BlackStart:
+            MessageBox(NULL,L"黑方移动",L"提示",MB_OK);
+            p1=selectChess();
+            if(gColor(p1)!=black) goto BlackStart;
+            MessageBox(NULL,L"棋子要去哪",L"提示",MB_OK);
+            p2=selectChess();
+            if(!checkWay(p1,p2)) goto BlackStart;
+            Move(p1,p2);
+        }
+    }
+};

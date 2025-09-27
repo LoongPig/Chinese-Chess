@@ -5,7 +5,7 @@ using namespace std;
 int main(){
     start();
     Board _const_;
-    PlayOn(_const_);
+    _const_.play();
     system("pause");
     return 0;
 }
