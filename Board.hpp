@@ -49,6 +49,18 @@ public:
     Color gColor(int x,int y){ return board[x][y].gColor(); }
     Color gColor(coord _){ return gColor(_.x,_.y); }
     void Move(int x,int y,int a,int b){ board[a][b].change(board[x][y]);board[x][y].change(Chess()); }// x,y => a,b
+    int rowCount(int x,int sy,int ey){
+        if(sy>ey) swap(sy,ey); 
+        int cnt=0;
+        for(int i=sy;i<=ey;i++) cnt+=(gColor(x,i)==null);
+        return cnt; 
+    }// 包含 sy,ey
+    int colCount(int y,int sx,int ex){ 
+        if(sx>ex) swap(sx,ex);
+        int cnt=0;
+        for(int i=sx;i<=ex;i++) cnt+=(gColor(i,y)==null);
+        return cnt; 
+    }// 包含 sx,ex
     template<typename... Args>
     void Change(Args... _op) { (void(board[_op.x][_op.y].change(_op._chess)), ...); }
     Board(){
@@ -67,7 +79,7 @@ public:
             opt(8,2,Chess(black,L'炮')),opt(8,8,Chess(black,L'炮')),
 
             opt(1,5,Chess(red,L'帅')),opt(10,5,Chess(black,L'将')));
-        for(int i=1;i<=9;i+=2) Change(opt(4,i,Chess(red,L'卒')),opt(7,i,Chess(black,L'兵')));
+        for(int i=1;i<=9;i+=2) Change(opt(4,i,Chess(red,L'兵')),opt(7,i,Chess(black,L'卒')));
     }
     void print(){
         gotoXY(0,0);
@@ -101,8 +113,10 @@ public:
             else return false;
         }
         if(gChess(s)==L'车'||gChess(s)==L'車'){
-            if(sx==ex||sy==ey) return true;
-            else return false;
+            if(sx!=ex&&sy!=ey) return false;
+            if(sx==ex&&rowCount(sx,sy,ey)==1+(gColor(e)!=null)) return true; //车和被吃的棋子
+            else if(sy==ey&&colCount(sy,sx,ex)==1+(gColor(e)!=null)) return true;
+            return false;
         }
         if(gChess(s)==L'马'||gChess(s)==L'馬'){
             int dx[]={1,1,-1,-1,2,2,-2,-2};
@@ -115,16 +129,30 @@ public:
             return false;
         }
         if(gChess(s)==L'相'||gChess(s)==L'象'){
-            
+            int dx[]={2,2,-2,-2};
+            int dy[]={-2,2,-2,2};
+            for(int i=0;i<4;i++)
+                if(sx+dx[i]==ex&&sy+dy[i]==ey)
+                    return gColor(sx+dx[i]/2,sy+dy[i]/2)==null;
+            return false;
         }
         if(gChess(s)==L'士'||gChess(s)==L'仕'){
-
+            int dx[]={1,1,-1,-1};
+            int dy[]={-1,1,-1,1};
+            bool flag=false;
+            for(int i=0;i<4;i++) flag|=(sx+dx[i]==ex&&sy+dy[i]==ey);
+            return flag;                
         }
         if(gChess(s)==L'炮'||gChess(s)==L'炮'){
-
+            if(sx!=ex&&sy!=ey) return false;
+            if(sx==ex&&rowCount(sx,sy,ey)==1+(gColor(e)!=null)*2) return true;
+            if(sy==ey&&colCount(sy,sx,ex)==1+(gColor(e)!=null)*2) return true;
+            return false;
         }
         if(gChess(s)==L'兵'||gChess(s)==L'卒'){
-
+            if(gChess(s)==L'卒') return (sx>5&&sx-ex==1&&sy==ey)||(sx<=5&&sx-ex+abs(sy-ey)==1);
+            else return (sx<6&&ex-sx==1&&sy==ey)||(sx>=6&&ex-sx+abs(sy-ey)==1);
         }
+        return false;
     }
 };
