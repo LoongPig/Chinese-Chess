@@ -3,13 +3,24 @@
 #include "Board.hpp"
 using namespace std;
 int main(){
-    _setmode(_fileno(stdout), _O_U16TEXT);
-    hideCursor(),system("color f0"),gotoXY(0,0);
-    Board _const;
-    for(int i=1;i<=10;i++){
-        coord p1=_const.selectChess();
-        coord p2=_const.selectChess();
-        wcout<<p1.x<<L" "<<p1.y<<L" "<<p2.x<<L" "<<p2.y<<L" "<<_const.checkWay(p1,p2)<<endl;
+    start();
+    Board _const_;
+    _const_.print();
+    while(!key_down(VK_ESCAPE)){
+        RedStart:
+        MessageBox(NULL,L"Red select move chess",L"Prompt",MB_OK);
+        coord p1=_const_.selectChess();
+        MessageBox(NULL,L"Red select where to go",L"Prompt",MB_OK);
+        coord p2=_const_.selectChess();
+        if(!_const_.checkWay(p1,p2)) goto RedStart;
+        _const_.Move(p1,p2);
+        BlackStart:
+        MessageBox(NULL,L"Black select move chess",L"Prompt",MB_OK);
+        p1=_const_.selectChess();
+        MessageBox(NULL,L"Black select where to go",L"Prompt",MB_OK);
+        p2=_const_.selectChess();
+        if(!_const_.checkWay(p1,p2)) goto BlackStart;
+        _const_.Move(p1,p2);
     }
     system("pause");
     return 0;

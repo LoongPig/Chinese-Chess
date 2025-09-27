@@ -1,12 +1,13 @@
 #pragma once
+#ifndef UNICODE
+#define UNICODE
+#endif
+
 #include <io.h>
 #include <conio.h>
 #include <fcntl.h>
 #include <windows.h>
 #include <bits/stdc++.h>
-#ifdef UNICODE
-#define UNICODE
-#endif
 #define key_down(VK_NONAME) ((GetAsyncKeyState(VK_NONAME) & 0x8000) ? 1:0)
 using namespace std;
 const HANDLE hIn=GetStdHandle(STD_INPUT_HANDLE);
@@ -22,4 +23,8 @@ void gotoXY(short row,short line){
 }
 void colorString(int col){
 	SetConsoleTextAttribute(hOut,col);
+}
+void start(){
+    _setmode(_fileno(stdout), _O_U16TEXT);
+    hideCursor(),system("color f0"),gotoXY(0,0);
 }

@@ -49,16 +49,17 @@ public:
     Color gColor(int x,int y){ return board[x][y].gColor(); }
     Color gColor(coord _){ return gColor(_.x,_.y); }
     void Move(int x,int y,int a,int b){ board[a][b].change(board[x][y]);board[x][y].change(Chess()); }// x,y => a,b
+    void Move(coord s,coord e){ Move(s.x,s.y,e.x,e.y); }
     int rowCount(int x,int sy,int ey){
         if(sy>ey) swap(sy,ey); 
         int cnt=0;
-        for(int i=sy;i<=ey;i++) cnt+=(gColor(x,i)==null);
+        for(int i=sy;i<=ey;i++) cnt+=(gColor(x,i)!=null);
         return cnt; 
     }// 包含 sy,ey
     int colCount(int y,int sx,int ex){ 
         if(sx>ex) swap(sx,ex);
         int cnt=0;
-        for(int i=sx;i<=ex;i++) cnt+=(gColor(i,y)==null);
+        for(int i=sx;i<=ex;i++) cnt+=(gColor(i,y)!=null);
         return cnt; 
     }// 包含 sx,ex
     template<typename... Args>
@@ -86,6 +87,10 @@ public:
         for(int i=1;i<=10;i++){
             for(int j=1;j<=9;j++)
                 board[i][j].print();
+            wcout<<L"\n";
+        }
+        for(int i=1;i<=10;i++){
+            for(int j=1;j<=20;j++) wcout<<L" ";
             wcout<<L"\n";
         }
     }
