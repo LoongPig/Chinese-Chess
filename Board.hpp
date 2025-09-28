@@ -13,26 +13,27 @@ class Chess{
 private:
     Color color;
     wchar_t chess;
-    bool flag;
+    bool flag;//Is or is not highlight
 public:
-    Color gColor(){ return color; }
-    wchar_t gChess(){ return chess; }
-    void changeColor(Color col){ color=col; }
-    void changeChess(wchar_t _chess){ chess=_chess; }
-    void change(Chess che){ color=che.gColor(),chess=che.gChess(); }
+    Color gColor(){ return color; }//get Color
+    wchar_t gChess(){ return chess; }//get Chess
+    void changeColor(Color col){ color=col; }//change Color
+    void changeChess(wchar_t _chess){ chess=_chess; }//change Color
+    void change(Chess che){ color=che.gColor(),chess=che.gChess(); }//change color and chess
     Chess(Color col=null,wchar_t che=blank){ color=col,chess=che,flag=false; }
     void highLight(){ flag=true; }
     void lowLight(){ flag=false; }
     void print(){
+        //switch color
         if(color==red) colorString(244);
         if(color==black) colorString(240);
         if(flag) colorString(246);
         wcout<<chess;
         if(chess==blank) wcout<<L" ";
-        colorString(240);
+        colorString(240);//turn to start
     }
 };
-struct opt{
+struct opt{// The options
     int x,y;
     Chess _chess;
     opt(int _x,int _y,Chess _che){ x=_x,y=_y,_chess=_che; }
@@ -42,29 +43,37 @@ class Board{
 private:
     Chess board[15][15];
     int StepCnt;
-    coord redMaster,blackMaster;//红黑方帅将位置
+    coord redMaster,blackMaster;//Place of them
 public:
-    Chess gBoard(int x,int y){ return board[x][y]; }
-    wchar_t gChess(int x,int y){ return board[x][y].gChess(); }
+    Chess gBoard(int x,int y){ return board[x][y]; }//get Board(x,y)
+    wchar_t gChess(int x,int y){ return board[x][y].gChess(); }//get Board(x,y)'s chess
     wchar_t gChess(coord _){ return gChess(_.x,_.y); }
     Color gColor(int x,int y){ return board[x][y].gColor(); }
     Color gColor(coord _){ return gColor(_.x,_.y); }
+    coord gMaster(Color col){//get the master place
+        if(col==red) return redMaster;
+        return blackMaster; 
+    }
+    void changeMaster(Color col,int x,int y){//change the place
+        if(col==red) redMaster=coord(x,y);
+        else blackMaster=coord(x,y);
+    }
     void Move(int x,int y,int a,int b){ board[a][b].change(board[x][y]);board[x][y].change(Chess()); }// x,y => a,b
     void Move(coord s,coord e){ Move(s.x,s.y,e.x,e.y); }
-    int rowCount(int x,int sy,int ey){
+    int rowCount(int x,int sy,int ey){//count how many chess are there on sy~ey on the X row
         if(sy>ey) swap(sy,ey); 
         int cnt=0;
         for(int i=sy;i<=ey;i++) cnt+=(gColor(x,i)!=null);
         return cnt; 
     }// 包含 sy,ey
-    int colCount(int y,int sx,int ex){ 
+    int colCount(int y,int sx,int ex){ //同上
         if(sx>ex) swap(sx,ex);
         int cnt=0;
         for(int i=sx;i<=ex;i++) cnt+=(gColor(i,y)!=null);
         return cnt; 
     }// 包含 sx,ex
     template<typename... Args>
-    void Change(Args... _op) { (void(board[_op.x][_op.y].change(_op._chess)), ...); }
+    void Change(Args... _op) { (void(board[_op.x][_op.y].change(_op._chess)), ...); }//solve the opt
     Board(){
         StepCnt=0,redMaster=coord(1,5),blackMaster=coord(10,5);
         Change(
@@ -83,10 +92,10 @@ public:
             opt(1,5,Chess(red,L'帅')),opt(10,5,Chess(black,L'将')));
         for(int i=1;i<=9;i+=2) Change(opt(4,i,Chess(red,L'兵')),opt(7,i,Chess(black,L'卒')));
     }
-    void print(){
+    void print(){//print Board
         gotoXY(0,0);
         ///*
-        wcout<<L"WASD 或 ↑,↓,←,→ 移动，E 确定\n";
+        wcout<<L"WASD 或 ↑,↓,←,→ 移动，Enter 确定\n";
         //*/
         for(int i=1;i<=10;i++){
             for(int j=1;j<=9;j++)
@@ -98,9 +107,9 @@ public:
             wcout<<L"\n";
         }
     }
-    coord selectChess(){
+    coord selectChess(){//select a chess
         static coord pla={1,1};
-        while(!key_down('E')){
+        while(!key_down(VK_RETURN)){
             coord tmp=pla;
             if(key_down(VK_UP)||key_down('W')) pla.x=max(1,pla.x-1);
             if(key_down(VK_LEFT)||key_down('A')) pla.y=max(1,pla.y-1);
@@ -115,13 +124,12 @@ public:
         print();
         return pla;
     }
-    bool checkWay(coord s,coord e){
+    bool checkWay(coord s,coord e){//check the chess way is it ok.
         auto [sx,sy]=s; auto [ex,ey]=e;
         if(s==e||gColor(s)==null||gColor(s)==gColor(e)) return false;
         if(gChess(s)==L'将'||gChess(s)==L'帅'){
             if(abs(sx-ex)+abs(sy-ey)==1){
-                if(gColor(s)==red) redMaster=e;
-                else blackMaster=e;
+                changeMaster(gColor(s),ex,ey);
                 return true;
             }
             else return false;
@@ -173,10 +181,10 @@ public:
         for(int i=1;i<=10;i++)
             for(int j=1;j<=9;j++)
                 if(gColor(i,j)==gAntColor(col))
-                    if(checkWay(coord(i,j),Master(red))) return true;
+                    if(checkWay(coord(i,j),gMaster(col))) return true;
          return false;
     }
-    void play(){
+    void play(){//Start game function
         print();
         while(!key_down(VK_ESCAPE)){
             RedStart:
