@@ -32,8 +32,7 @@ void start(){
     _setmode(_fileno(stdout), _O_U16TEXT);//Set UTF-8
     hideCursor(),system("color f0"),gotoXY(0,0);//Init
     //Print TUI
-    wcout<<L"中国象棋 v1.0.1\n";
-       
+    wcout<<L"中国象棋 v1.0.1\n";  
 }
 wstring StrToWstr(string s){
     wstring_convert<codecvt_utf8<wchar_t>> converter;

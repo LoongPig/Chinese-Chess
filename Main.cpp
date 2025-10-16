@@ -4,6 +4,7 @@
 using namespace std;
 int main(){
     start();
-    system("pause");
+    Board _;
+    _.play();
     return 0;
 }
