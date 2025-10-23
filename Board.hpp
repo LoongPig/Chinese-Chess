@@ -95,7 +95,7 @@ public:
     void print(){//print Board
         gotoXY(0,0);
         ///*
-        wcout<<L"WASD 或 ↑,↓,←,→ 移动，Enter 确定\n";
+        wcout<<L"WASD 或 ↑,↓,←,→ 移动，Enter 确定，ESC 退出\n";
         //*/
         for(int i=1;i<=10;i++){
             for(int j=1;j<=9;j++)
