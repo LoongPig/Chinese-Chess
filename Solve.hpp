@@ -32,7 +32,14 @@ void start(){
     _setmode(_fileno(stdout), _O_U16TEXT);//Set UTF-8
     hideCursor(),system("color f0"),gotoXY(0,0);//Init
     //Print TUI
-    wcout<<L"中国象棋 v1.0.1\n";  
+    wcout<<L"Chinese-Chess v1.0.3\n";  
+    thread t([&]{//check yes/not press ESC
+        while(1){
+            if(key_down(VK_ESCAPE))
+                if(MessageBox(NULL,L"你确定要退出吗？",L"询问",MB_YESNO)==IDYES) exit(0);
+            Sleep(55);
+        }
+    }); t.detach();
 }
 wstring StrToWstr(string s){
     wstring_convert<codecvt_utf8<wchar_t>> converter;

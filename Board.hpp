@@ -73,7 +73,7 @@ public:
         return cnt; 
     }// 包含 sx,ex
     template<typename... Args>
-    void Change(Args... _op) { (void(board[_op.x][_op.y].change(_op._chess)), ...); }//solve the opt
+    void Change(Args... _op) { ((board[_op.x][_op.y].change(_op._chess)), ...); }//solve the opt
     Board(){
         StepCnt=0,redMaster=coord(1,5),blackMaster=coord(10,5);
         Change(
