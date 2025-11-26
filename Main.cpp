@@ -1,20 +1,11 @@
-#include <bits/stdc++.h>
-<<<<<<< HEAD
 #include "Basic.hpp"
-=======
-#include "Solve.hpp"
->>>>>>> 2f864cf7b08f032f22dbbb7695c7fd1155f48603
 #include "Board.hpp"
+#include "Socket.hpp"
 using namespace std;
 int main(){
     start();
-<<<<<<< HEAD
-    Board _;
-    _.play();
-=======
-    Board _const_;
-    PlayOn(_const_);
+    Msg msg={(1,1),(2,2),0};
+    cout<<msg.to_string()<<"\n"<<to_Msg(msg.to_string()).to_string();
     system("pause");
->>>>>>> 2f864cf7b08f032f22dbbb7695c7fd1155f48603
     return 0;
 }
